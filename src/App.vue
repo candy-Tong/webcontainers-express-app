@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import {ref} from 'vue'
+import { files } from './files';
+import {webcontainerInstance} from "./webContainer";
 
-const iframeEl = ref<HTMLTextAreaElement>()
-const textareaEl = ref<HTMLIFrameElement>()
+const textValue = ref(files['index.js'].file.contents);
+
+async function onChange(){
+  await webcontainerInstance.fs.writeFile('/index.js', textValue.value);
+}
 </script>
 
 <template>
   <div class="container">
     <div class="editor">
-      <textarea ref="iframeEl">I am a textarea</textarea>
+      <textarea v-model="textValue" @change="onChange">I am a textarea</textarea>
     </div>
     <div class="preview">
-      <iframe ref="textareaEl" src="./loading.html"></iframe>
+      <iframe id="test-frame" src="./loading.html"></iframe>
     </div>
   </div>
 </template>
@@ -21,17 +26,13 @@ const textareaEl = ref<HTMLIFrameElement>()
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  height: 100vh;
-}
-
 .container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   height: 100%;
   width: 100%;
+  margin-top: 30vh;
 }
 
 textarea {
